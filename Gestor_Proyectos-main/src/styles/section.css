@@ -1,0 +1,19 @@
+.top-100 {
+    animation: slideDown .5s ease-in-out;
+}
+
+@keyframes slideDown {
+    0% {
+        top: -50%;
+    }
+
+    100% {
+        top: 0;
+    }
+}
+
+* {
+    outline: none !important;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+} 

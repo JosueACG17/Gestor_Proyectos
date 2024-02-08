@@ -1,0 +1,108 @@
+/*División de los contenedores*/
+.Tasks-Main {
+    display: grid;
+    height: 100vh;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 0.2fr 1.5fr 0.5fr;
+    grid-template-areas:
+        "Tasks-Navbar Tasks-Navbar Tasks-Navbar"
+        "Tasks-Body Tasks-Body Tasks-Body"
+        "Tasks-Footer Tasks-Footer Tasks-Footer";
+}
+
+/*Header*/
+.Tasks-Navbar {
+    grid-area: Tasks-Navbar;
+}
+
+/*Body*/
+.Tasks-Body {
+    display: grid;
+    grid-area: Tasks-Body;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1.5fr;
+    grid-template-areas:
+        "Tasks-Container-Header Tasks-Container-Header"
+        "Tasks-Cards-Container Tasks-Cards-Container";
+}
+
+/*Titulo y Botón*/
+.Tasks-Container-Header {
+    grid-area: Tasks-Container-Header;
+    display: flex;
+    align-items: center;
+    margin: 30px;
+    margin-left: 40px;
+    margin-right: 40px;
+    border-bottom: 2px solid #ccc;
+}
+
+.Tasks-Container-Header h1 {
+    font-family: 'Newsreader';
+    font-weight: normal;
+    font-size: 64px;
+    margin-right: 50%;
+}
+
+.Tasks-Container-Header button {
+    font-family: 'Inter';
+    font-size: 16px;
+    font-weight: 600;
+
+    color: #fff;
+
+    background: #568D23;
+    border-radius: 20px;
+    padding: 10px 60px;
+    /* Ajustar el padding según sea necesario */
+    margin-left: 200px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Tasks-Container-Header button:hover {
+    background: #426B1F;
+    transform: scale(1.1);
+}
+
+/*Tarjetas de tareas*/
+.Tasks-Cards-Container {
+    background: rgb(240, 240, 240);
+
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+
+    margin-left: 40px;
+
+    width: auto;
+}
+
+.Tasks-Cards-Container:hover {
+    transform: scale(1.05);
+}
+
+/*Footer*/
+.Tasks-Footer {
+    grid-area: Tasks-Footer;
+}
+
+/*Fuentes*/
+@font-face {
+    font-family: 'Newsreader';
+    src: url('../fonts/Newsreader-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

@@ -1,0 +1,183 @@
+#preloader {
+    width: 400px;
+    height: 400px;
+  }
+.contenedor{
+  display: grid;
+  place-items: center;
+}
+  #volumenes {
+    position: relative;
+    margin: 0 50px 0 55px;
+    width: 200px;
+    height: 110px;
+    margin-bottom: 15px;
+    margin-top: 60px;
+  }
+  .volume1 {
+    position: absolute;
+    bottom: 0;
+    animation: volume1 .5s infinite linear alternate;
+    background-color: #6b8494;
+    width: 50px;
+    border-radius: 4px;
+  }
+  .volume2 {
+    position: absolute;
+    left: 60px;
+    bottom: 0;
+    animation: volume2 .5s infinite linear alternate;
+    background-color: #6b8494;
+    width: 50px;
+    border-radius: 4px;
+  }
+  .volume3 {
+    position: absolute;
+    left: 120px;
+    bottom: 0;
+    animation: volume3 .5s infinite linear alternate;
+    background-color: #6b8494;
+    width: 50px;
+    border-radius: 4px;
+  }
+  .volume4 {
+    position: absolute;
+    left: 180px;
+    bottom: 0;
+    animation: volume4 .5s infinite linear alternate;
+    background-color: #6b8494;
+    width: 50px;
+    border-radius: 4px;
+  }
+  .volume5 {
+    position: absolute;
+    left: 240px;
+    bottom: 0;
+    animation: volume5 .5s infinite linear alternate;
+    background-color: #6b8494;
+    width: 50px;
+    border-radius: 4px;
+  }
+  .barra1 {
+    position: relative;
+    overflow: hidden;
+    background-color: gainsboro;
+    width: 400px;
+    height: 30px;
+    border-radius: 20px;
+  }
+  .barra2 {
+    position: absolute;
+    left: 0px;
+    animation: carga 9s;
+    background-color: grey;
+    margin: auto;
+    width: 400px;
+    height: 30px;
+    border-radius: 20px;
+  }
+  @keyframes carga{
+    0% {
+        display: none;
+    }
+    1% {
+        width: 10px;
+    }
+    15% {
+        width: 25px;
+    }
+    40% {
+        width: 75px;
+    }
+    65% {
+        width: 215px;
+    }
+    75% {
+        width: 315px;
+    }
+    90% {
+        width: 385px;
+    }
+    100% {
+        width:400px;
+    }
+  }
+  @keyframes volume1{
+    0% {
+        height: 40px;
+        background-color: #04629c;
+    }
+    30% {
+        height: 60px;
+        background-color: #6518b2;
+    }
+    100% {
+        height: 110px;
+        background-color: #33b1ff;
+    }
+  }
+  @keyframes volume2{
+    0% {
+        height: 90px;
+        background-color: #e8eb5f
+    }
+    40% {
+        height: 80px;
+        background-color: #6c90a5
+    }
+    100% {
+        height: 30px;
+        background-color: rgb(128, 171, 84)
+    }
+  }
+  @keyframes volume3{
+    0% {
+        height: 50px;
+        background-color: #6b8494
+    }
+    30% {
+        height: 30px;
+        background-color: #ab6d54
+    }
+    100% {
+        height: 20px;
+        background-color: #6b8494
+    }
+  }
+  @keyframes volume4{
+    0% {
+        height: 20px;
+        background-color: #a9ab54
+    }
+    30% {
+        height: 70px;
+        background-color: #6b8494
+    }
+    100% {
+        height: 110px;
+        background-color: #a9ab54
+    }
+  }
+  @keyframes volume5{
+    0% {
+        height: 70px;
+        background-color: #ab79de
+    }
+    60% {
+        height: 30px;
+        background-color: #0d2022
+    }
+    100% {
+        height: 5px;
+        background-color: #43a0f1
+    }
+  }
+  
+  .texto{
+    margin-top: 50px;
+    font-size: 45px;
+    text-align: center;
+    font-weight: 1000;
+    color: white;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  }

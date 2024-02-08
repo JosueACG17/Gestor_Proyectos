@@ -1,0 +1,55 @@
+.Equipos-Main {
+    display: grid;
+    height: 100vh;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.2fr 1.5fr 1.5fr 0.5fr;
+    grid-template-areas:
+        "Equipos-Navbar"
+        "Equipos-Header"
+        "Equipos-Cards"
+        "Equipos-Footer";
+}
+
+.Equipos-Navbar {
+    grid-area: Equipos-Navbar;
+}
+
+.Equipos-Header {
+    grid-area: Equipos-Header;
+    display: flex;
+    align-items: center;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    padding-top: 20px;
+    border-bottom: 2px solid #ccc;
+}
+
+.Equipos-Header h1 {
+    font-family: 'Newsreader';
+    font-weight: normal;
+    font-size: 64px;
+    margin-right: 62%;
+}
+
+.Equipos-Header button {
+    font-family: 'Inter';
+    width: 150px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: #568D23;
+    border-radius: 20px;
+    padding: 10px 15px;
+    margin-right: 25px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Equipos-Cards {
+    grid-area: Equipos-Cards;
+    
+}
+
+.Equipos-Footer {
+    grid-area: Equipos-Footer;
+}
