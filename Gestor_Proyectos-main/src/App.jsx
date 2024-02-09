@@ -42,6 +42,7 @@ function App() {
           {user && user.nombre_del_rol === 'Miembro' && (
             <>
               <Route element={<ProtectedRoute canActivate={user} redirectPath='/home' />} >
+                <Route path='/' element={<Login />} />
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/dashboard/table' element={<TableDash />} />
                 <Route path='/dashboard/tab_project' element={<TabProject />} />
@@ -51,7 +52,6 @@ function App() {
           )}
 
           <Route path='/dashboard' element={<Dashboard />} />
-
 
           {/* Permitir acceso al dashboard para usuarios Miembro y Administrador */}
           {user && user.nombre_del_rol === 'Administrador' && (

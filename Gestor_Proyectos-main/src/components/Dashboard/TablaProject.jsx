@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2';
+import "../../styles/tables.css"
 
 function TablaProyect() {
     const [ProjectsList, setProject] = useState([]);
     const [editar, setEditar] = useState(false);
-
     const [proyecto, setProyecto] = useState('');
     const [estado, setEstado] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [id, setId] = useState(0);
-
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
@@ -41,7 +40,7 @@ function TablaProyect() {
                 );
                 Swal.fire('Proyecto eliminado', '', 'success');
             } catch (error) {
-                
+
             }
         }
     };
@@ -52,7 +51,7 @@ function TablaProyect() {
             estado.trim() !== '' &&
             descripcion.trim() !== ''
         ) {
-            if (/[<>]/.test(proyecto) || /[<>]/.test(estado) || /[<>]/.test(descripcion) || /[()]/.test(proyecto) || /[()]/.test(estado) || /[()]/.test(descripcion)) {
+            if (/[^a-zA-Z0-9\s]/.test(proyecto) || /[^a-zA-Z0-9\s]/.test(estado) || /[^a-zA-Z0-9\s]/.test(descripcion)) {
                 setErrorMessage('Datos a insertar no permitidos.');
                 return false;
             }
@@ -76,7 +75,7 @@ function TablaProyect() {
                 window.location.reload();
             } catch (error) {
             }
-        }   
+        }
     };
 
     const editarUsuario = (val) => {
@@ -87,12 +86,19 @@ function TablaProyect() {
         setDescripcion(val.descripcion);
     };
 
+    const cerrarFormulario = () => {
+        setEditar(false);
+    };
 
     return (
         <>
             {editar ? (
                 <div className="app">
                     <div className="datos">
+                        <div className='flex'>
+                            <h1 className='text-2xl font-bold mb-6 mr-20'> Formulario de Editar</h1>
+                            <button className="cerrar-btn" onClick={cerrarFormulario}>Cerrar</button>
+                        </div>
                         <label>Nombre del proyecto:<input
                             onChange={(event) => {
                                 setProyecto(event.target.value.trim());
@@ -115,15 +121,13 @@ function TablaProyect() {
                             value={descripcion}
                             type='text' /></label><br />
                         {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-                        <button onClick={actualizarProyecto}>Editar</button>
+                        <button className="hover:bg-red-700 hover:text-white" onClick={actualizarProyecto}>Editar</button>
                     </div>
                 </div>
             ) : (
                 <div class="flex justify-center mt-20 lg:ml-60">
                     <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5 mx-auto">
-                        <div className="flex">
-                            <h1 class="text-3xl mb-2 text-center font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-5xl"><span class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Tabla Proyectos</span> </h1>
-                        </div>
+                        <h1 class="text-3xl mb-2 text-center font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-5xl"><span class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Tabla Proyectos</span> </h1>
                         <table class="w-full border-collapse bg-white text-left text-xs md:text-sm lg:text-base text-gray-500 ">
                             <thead class="bg-gray-50 w-full">
                                 <tr>

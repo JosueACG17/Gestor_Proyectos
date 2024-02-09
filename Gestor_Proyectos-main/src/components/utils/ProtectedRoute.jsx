@@ -9,11 +9,10 @@ const ProtectedRoute = ({
     if (!canActivate) {
         // Usuario no autenticado, redirigir al inicio de sesión
         return <Navigate to={redirectPath} replace />;
-    } else if (user && user.nombre_del_rol !== 'Administrador') {
+    } else if (user && user.nombre_del_rol !== 'Administrador' ) {
         // Usuario autenticado pero no es Administrador, redirigir al inicio de sesión
         return <Navigate to={redirectPath} replace />;
     }
-    
     // Permitir el acceso a la ruta protegida para usuarios autenticados y Administradores
     return <Outlet />;
 }

@@ -21,8 +21,11 @@ function Logincom() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (/\s/.test(password) || /[<>]/.test(password)) {
-            setError("Contraseña no permitida");
+        // Verificar si la contraseña contiene caracteres especiales
+        if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+            setError("La contraseña no puede contener caracteres especiales");
+        } else if (/\s/.test(password)) {
+            setError("La contraseña no puede contener espacios en blanco");
         } else if (!/(?=.*[A-Z])(?=.*\d).{5,}/.test(password)) {
             setError("La contraseña debe contener al menos una mayúscula, un número y tener un mínimo de 5 caracteres");
         } else {
@@ -39,29 +42,27 @@ function Logincom() {
 
                 const data = await response.json();
                 if (response.ok) {
-                    if (data.Estatus === "CORRECTO" && data.Usuario && data.Usuario.token) {
+                    if (data.Estatus === "CORRECTO" && data.Usuario && data.Usuario.token && data.Usuario.user) {
                         const { token, user } = data.Usuario;
                         localStorage.setItem('token', token);
                         localStorage.setItem('user', JSON.stringify({ ...user, role: user.role }));
-
-
+                
                         if (user.nombre_del_rol === 'Administrador') {
                             navigate('/dashboard');
                         } else {
                             navigate('/home');
                         }
                     } else {
-                        setError("Usuario no encontrado");
+                        setError("Correo o contraseña incorrecto");
                     }
                 } else {
                     setError("Error al realizar la solicitud: " + data.message);
-                }
+                }                
             } catch (error) {
                 setError("Error de conexión");
             }
         }
     };
-
     useEffect(() => {
         let currentIndex = 0;
         const interval = setInterval(() => {
@@ -115,7 +116,7 @@ function Logincom() {
                                     </label>
                                     <div className="relative">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500 absolute left-0 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2zm10" />
                                         </svg>
                                         <input
                                             className="w-full text-base px-4 py-2 border-b border-gray-600 focus:outline-none rounded-2xl focus:border-indigo-500 pl-11"

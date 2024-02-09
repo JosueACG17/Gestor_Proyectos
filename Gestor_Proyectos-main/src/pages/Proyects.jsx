@@ -14,9 +14,10 @@ export default function Proyects() {
     const add = async () => {
         if (!proyecto.trim() || !descripcion.trim() || !estado.trim()) {
             setErrorMessage('Todos los campos son obligatorios');
-        } else if (proyecto.includes('<') || proyecto.includes('>') || proyecto.includes('(') || proyecto.includes(')') || descripcion.includes('<') || descripcion.includes('>')) {
+        } else if (!/^[a-zA-Z0-9\s]*$/.test(proyecto) || !/^[a-zA-Z0-9\s]*$/.test(descripcion)) {
             setErrorMessage('Los datos que quiere insertar no están permitidos.');
-        } else {
+        }
+        else {
             try {
                 await axios.post('http://localhost:3000/crearproyecto', {
                     nombre_proyecto: proyecto,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function ModalUser() {
@@ -11,6 +11,33 @@ function ModalUser() {
   const [editar, setEditar] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [equiposList, setEquiposList] = useState([]);
+  const [usuariosList, setUsuariosList] = useState([]); // Nuevo estado para almacenar los datos de usuarios
+
+
+  useEffect(() => {
+    const fetchEquipos = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/equipos');
+        setEquiposList(response.data.datos);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchUsuarios = async () => { // Función para obtener los datos de usuarios
+      try {
+        const response = await axios.get('http://localhost:3000/usuarios');
+        setUsuariosList(response.data.datos);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchEquipos();
+    fetchUsuarios(); // Llamar a la función para obtener los datos de usuarios
+  }, []);
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -135,27 +162,34 @@ function ModalUser() {
                     type="text" name="password" id="password" className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Introduce una contraseña" required />
                 </div>
                 <div className="col-span-2">
-                  <label for="name" className="block text-sm font-medium text-white">Equipo</label>
-                  <input
+                  <label htmlFor="name" className="block text-sm font-medium text-white">Equipo</label>
+                  <select
                     onChange={(event) => {
                       setEquipo(event.target.value);
                       setErrorMessage('');
                     }}
-                    type="text" name="team" id="team" className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Introduce un equipo" required />
+                    id="team" className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black ">
+                    <option style={{ color: 'black' }} value="">Selecciona un equipo</option>
+                    {equiposList.map((equipo) => (
+                      <option style={{ color: 'black' }} key={equipo.id_equipos} value={equipo.nombre_del_equipo}>{equipo.nombre_del_equipo}</option>
+                    ))}
+                  </select>
                 </div>
+
                 <div className="col-span-2 sm:col-span-1">
-                  <label for="category" className="block text-sm font-medium text-white">Rol</label>
+                  <label htmlFor="category" className="block text-sm font-medium text-white">Rol</label>
                   <select
                     onChange={(event) => {
                       setRol(event.target.value);
                       setErrorMessage('');
                     }}
                     id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5  dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                    <option selected="">Selecciona un rol</option>
+                    <option value="" disabled selected>Selecciona un rol</option>
                     <option value="Miembro">Miembro</option>
                     <option value="Administrador">Administrador</option>
                   </select>
                 </div>
+
               </div>
             </form>
 

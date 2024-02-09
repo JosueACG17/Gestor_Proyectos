@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "../../styles/tabteam.css"
 import Swal from 'sweetalert2';
 
 function TablaTeam() {
@@ -52,7 +53,7 @@ function TablaTeam() {
             equipo.trim() !== '' &&
             descripcion.trim() !== ''
         ) {
-            if (/[<>]/.test(equipo) || /[<>]/.test(descripcion) || /[()]/.test(equipo) || /[()]/.test(descripcion)) {
+            if (/[^a-zA-Z0-9\s]/.test(equipo) || /[^a-zA-Z0-9\s]/.test(descripcion)) {
                 setErrorMessage('Datos a insertar no permitidos.');
                 return false;
             }
@@ -87,13 +88,19 @@ function TablaTeam() {
         setDescripcion(val.descripcion_equipo);
     };
 
-
+    const cerrarFormulario = () => {
+        setEditar(false); // Esta función cerrará el modal
+    };
 
     return (
         <>
             {editar ? (
                 <div className="app">
                     <div className="datos">
+                        <div className='flex'>
+                            <h1 className='text-2xl font-bold mb-6 mr-10'> Formulario de Editar</h1>
+                            <button className="cerrar-btn" onClick={cerrarFormulario}>Cerrar</button>
+                        </div>
                         <label>Nombre del equipo:<input
                             onChange={(event) => {
                                 setEquipo(event.target.value.trim());
@@ -109,11 +116,11 @@ function TablaTeam() {
                             value={descripcion}
                             type='text' /></label><br />
                         {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-                        <button onClick={actualizarEquipo}>Editar</button>
+                        <button  className='hover:bg-red-700 hover:text-white' onClick={actualizarEquipo}>Editar</button>
                     </div>
-
                 </div>
             ) : (
+
                 <div class="flex justify-center mt-20 lg:ml-60">
                     <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5 mx-auto">
                         <h1 class="mb-2 text-center font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-5xl"><span class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Tabla Equipos</span> </h1>

@@ -4,6 +4,7 @@ const mysql = require('mysql');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 const app = express();
 const port = 3000;
@@ -211,9 +212,10 @@ app.delete("/eliminarProyecto/:id", (req, res) => {
   });
 });
 
+
 //EDITAR
 
-app.put("/editarusuario", (req, res) => {
+app.put("/editarusuario", async (req, res) => {
   const id = req.body.id_usuarios;
   const correo = req.body.correo_electronico;
   const contra = req.body.contrasenia;
@@ -221,17 +223,26 @@ app.put("/editarusuario", (req, res) => {
   const rol = req.body.nombre_del_rol;
   const equipo = req.body.equipo;
 
-  db.query(
-    'UPDATE usuarios SET correo_electronico=?, contrasenia=?, nombre_del_usuario=?, nombre_del_rol=?, equipo=? WHERE id_usuarios=?',
-    [correo, contra, usuario, rol, equipo, id],
-    (err, results) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.send("Usuario actualizado con éxito");
+  try {
+    // Hashea la contraseña antes de actualizar
+    const hashedPassword = await bcrypt.hash(contra, 10);
+
+    db.query(
+      'UPDATE usuarios SET correo_electronico=?, contrasenia=?, nombre_del_usuario=?, nombre_del_rol=?, equipo=? WHERE id_usuarios=?',
+      [correo, hashedPassword, usuario, rol, equipo, id],
+      (err, results) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send("Error al actualizar usuario");
+        } else {
+          res.send("Usuario actualizado con éxito");
+        }
       }
-    }
-  );
+    );
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error al actualizar usuario");
+  }
 });
 
 app.put("/editarproyecto", (req, res) => {

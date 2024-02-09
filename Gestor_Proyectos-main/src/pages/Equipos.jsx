@@ -13,8 +13,8 @@ function Equipos() {
     const add = async () => {
         if (!equipo.trim() || !descripcion.trim()) {
             setErrorMessage('Todos los campos son obligatorios');
-        } else if (equipo.includes('<') || equipo.includes('>') || equipo.includes('(') || equipo.includes(')') || descripcion.includes('<') || descripcion.includes('>')) {
-            setErrorMessage('El nombre y la descripción no están permitidos.');
+        } else if (!/^[\w\s]*$/.test(equipo) || !/^[\w\s]*$/.test(descripcion)) {
+            setErrorMessage('El nombre y la descripción no deben contener caracteres especiales.');        
         } else {
             try {
                 await axios.post('http://localhost:3000/crearequipo', {
