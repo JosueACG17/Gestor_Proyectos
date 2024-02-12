@@ -17,6 +17,19 @@ function Logincom() {
     }
 
     const navigate = useNavigate();
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+
+        if (token && user) {
+            const parsedUser = JSON.parse(user);
+            if (parsedUser.nombre_del_rol === 'Administrador') {
+                navigate('/dashboard');
+            } else {
+                navigate('/home');
+            }
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -62,22 +62,31 @@ app.post('/acceso', (req, res) => {
 
     if (results.length > 0) {
       const user = results[0];
-
-      const tokenPayload = {
-        id_usuario: user.id_usuarios,
-        id_rol: user.nombre_del_rol // Asegúrate de que este campo contenga el rol del usuario
-      };
-
-      const token = jwt.sign(tokenPayload, '123', { expiresIn: '1d' });
-
-      // Envía el token JWT y los datos del usuario al front-end
-      res.cookie('token', token);
-      return res.json({ Estatus: 'CORRECTO', Usuario: { token, user } });
+      const hashedPassword = user.contrasenia; // Extraemos la contraseña encriptada de la base de datos
+      bcrypt.compare(contrasenia, hashedPassword, (err, result) => {
+        if (err) {
+          console.error('Error al comparar contraseñas:', err);
+          return res.status(500).json({ mensaje: 'Error interno del servidor' });
+        }
+        if (result) {
+          const tokenPayload = {
+            id_usuario: user.id_usuarios,
+            id_rol: user.nombre_del_rol // Asegúrate de que este campo contenga el rol del usuario
+          };
+          const token = jwt.sign(tokenPayload, '123', { expiresIn: '1d' });
+          // Envía el token JWT y los datos del usuario al front-end
+          res.cookie('token', token);
+          return res.json({ Estatus: 'CORRECTO', Usuario: { token, user } });
+        } else {
+          return res.json({ Estatus: 'ERROR', Error: 'Usuario o Contraseña Incorrecta' });
+        }
+      });
     } else {
       return res.json({ Estatus: 'ERROR', Error: 'Usuario o Contraseña Incorrecta' });
     }
   });
 });
+
 
 app.get('/usuario', verifyRole("Miembro"), (req, res) => {
   res.json({ mensaje: 'Acceso permitido para usuarios normales' });
@@ -112,14 +121,22 @@ app.get('/proyectos', (req, res) => {
 });
 
 app.get('/usuarios', (req, res) => {
-  const sql = 'CALL obtenerUsuarios';
+  const sql = 'Select * from usuarios';
   db.query(sql, (error, results) => {
+    
     if (error) {
-      console.error('Error al consultar datos:', error);
-      res.status(500).json({ mensaje: 'Error interno del servidor' });
-    } else {
-      res.json({ mensaje: 'Datos obtenidos correctamente', datos: results[0] });
+      console.error('Error al obtener los miembros:', err);
+      res.status(500).send('Error interno del servidor');
+      return;
     }
+
+    results.forEach(member => {
+      if (member.IDEquipo === null) {
+        member.NombreEquipo = 'Sin equipo';
+      }
+    });
+
+    res.json({ datos: results });
   });
 });
 
@@ -127,20 +144,41 @@ app.get('/usuarios', (req, res) => {
 //CREAR
 
 app.post("/crearusuario", (req, res) => {
-  const { correo_electronico, contrasenia, nombre_del_usuario, nombre_del_rol, equipo } = req.body;
+  const { correo_electronico, contrasenia, nombre_del_usuario, especialidad, nombre_del_rol, equipo } = req.body;
 
-  db.query('INSERT INTO usuarios(correo_electronico, contrasenia, nombre_del_usuario,nombre_del_rol, equipo) VALUES(?,?,?,?,?)',
-    [correo_electronico, contrasenia, nombre_del_usuario, nombre_del_rol, equipo],
-    (err, results) => {
+  // Verificar si el correo electrónico ya está registrado
+  db.query('SELECT * FROM usuarios WHERE correo_electronico = ?', correo_electronico, (err, results) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+    if (results.length > 0) {
+      return res.status(400).json({ mensaje: 'El correo electrónico ya está registrado' });
+    }
+
+    // Generar el hash de la contraseña
+    bcrypt.hash(contrasenia, 10, (err, hash) => {
       if (err) {
         console.log(err);
-        res.status(500).json({ mensaje: 'Error interno del servidor' });
-      } else {
-        res.send("Usuario registrado con éxito");
+        return res.status(500).json({ mensaje: 'Error interno del servidor' });
       }
-    }
-  );
+
+      // Almacenar el usuario en la base de datos con la contraseña encriptada
+      db.query('INSERT INTO usuarios(correo_electronico, contrasenia, nombre_del_usuario, especialidad, nombre_del_rol, IDEquipo) VALUES(?,?,?,?,?,?)',
+        [correo_electronico, hash, nombre_del_usuario, especialidad, nombre_del_rol, equipo],
+        (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({ mensaje: 'Error interno del servidor' });
+          } else {
+            return res.send("Usuario registrado con éxito");
+          }
+        }
+      );
+    });
+  });
 });
+
 
 app.post("/crearequipo", (req, res) => {
   const { nombre_del_equipo, descripcion_equipo } = req.body;
@@ -221,15 +259,16 @@ app.put("/editarusuario", async (req, res) => {
   const contra = req.body.contrasenia;
   const usuario = req.body.nombre_del_usuario;
   const rol = req.body.nombre_del_rol;
-  const equipo = req.body.equipo;
+  const especialidad = req.body.especialidad;
+  const equipo = req.body.IDEquipo;
 
   try {
     // Hashea la contraseña antes de actualizar
     const hashedPassword = await bcrypt.hash(contra, 10);
 
     db.query(
-      'UPDATE usuarios SET correo_electronico=?, contrasenia=?, nombre_del_usuario=?, nombre_del_rol=?, equipo=? WHERE id_usuarios=?',
-      [correo, hashedPassword, usuario, rol, equipo, id],
+      'UPDATE usuarios SET correo_electronico=?, contrasenia=?, nombre_del_usuario=?, nombre_del_rol=?, especialidad = ?, IDEquipo=? WHERE id_usuarios=?',
+      [correo, hashedPassword, usuario, rol, equipo, id,especialidad],
       (err, results) => {
         if (err) {
           console.log(err);

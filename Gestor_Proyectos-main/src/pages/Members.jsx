@@ -34,7 +34,7 @@ export default function Members() {
                         <div className='Member-Container' key={key}>
                             <img className='Member-DefaultPicture ' src={Miembros} alt='' />
                             <h2 className='font-bold text-2xl text-center mb-1'>{val.nombre_del_usuario}</h2>
-                            <h3 className='font-bold text-l mx-3 text-center mb-1'>{val.nombre_del_rol}</h3>
+                            <h3 className='font-bold text-l mx-3 text-center mb-1'>{val.especialidad}</h3>
                             <h3 className='font-bold text-l mx-3 text-center mb-1 pb-2'>{val.correo_electronico}</h3>
                         </div>
                     ))}

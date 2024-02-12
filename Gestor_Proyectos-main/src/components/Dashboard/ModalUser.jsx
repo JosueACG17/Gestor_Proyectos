@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 function ModalUser() {
   const [correo, setCorreo] = useState('');
@@ -7,6 +8,7 @@ function ModalUser() {
   const [usuario, setUsuario] = useState('');
   const [rol, setRol] = useState('');
   const [equipo, setEquipo] = useState('');
+  const [especialidad, setEspecialidad] = useState('');
   const [id, setId] = useState(0);
   const [editar, setEditar] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,25 +76,6 @@ function ModalUser() {
     }
   };
 
-  const actualizarUsuario = async () => {
-    if (validarCampos()) {
-      try {
-        await axios.put('http://localhost:3000/editarusuario', {
-          id_usuarios: id,
-          correo_electronico: correo,
-          contrasenia: contra,
-          nombre_del_usuario: usuario,
-          nombre_del_rol: rol,
-          equipo: equipo,
-        });
-        alert('Usuario actualizado con éxito');
-        window.location.reload();
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
   const agregarUsuario = async () => {
     if (validarCampos()) {
       try {
@@ -100,13 +83,25 @@ function ModalUser() {
           correo_electronico: correo,
           contrasenia: contra,
           nombre_del_usuario: usuario,
+          especialidad : especialidad,
           nombre_del_rol: rol,
           equipo: equipo,
         });
-        alert('Usuario registrado con éxito');
-        window.location.reload();
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario registrado con éxito',
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+          window.location.reload();
+        });
       } catch (error) {
-        console.error(error);
+        console.error('Error al registrar el usuario:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al registrar el usuario',
+          text: 'Ha ocurrido un error al intentar registrar el usuario. Por favor, inténtalo de nuevo más tarde.',
+        });
       }
     }
   };
@@ -133,9 +128,9 @@ function ModalUser() {
             </div>
 
             <form className="grid gap-4 grid-cols-1">
-              <div className="grid gap-4 mb-4 grid-cols-2">
+              <div className="grid gap-4 grid-cols-2">
                 <div className="col-span-2">
-                  <label for="name" className="block mb-2 text-sm font-medium text-white">Nombre</label>
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-white">Nombre</label>
                   <input
                     onChange={(event) => {
                       setUsuario(event.target.value);
@@ -144,7 +139,7 @@ function ModalUser() {
                     type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Introduce un nombre" required />
                 </div>
                 <div className="col-span-2">
-                  <label for="name" className="block text-sm font-medium text-white">Correo</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-white">Correo</label>
                   <input
                     onChange={(event) => {
                       setCorreo(event.target.value);
@@ -153,7 +148,7 @@ function ModalUser() {
                     type="email" name="email" id="email" className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Introduce un correo electronico" required />
                 </div>
                 <div className="col-span-2">
-                  <label for="name" className="block text-sm font-medium text-white">Contraseña</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-white">Contraseña</label>
                   <input
                     onChange={(event) => {
                       setContra(event.target.value);
@@ -171,25 +166,40 @@ function ModalUser() {
                     id="team" className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black ">
                     <option style={{ color: 'black' }} value="">Selecciona un equipo</option>
                     {equiposList.map((equipo) => (
-                      <option style={{ color: 'black' }} key={equipo.id_equipos} value={equipo.nombre_del_equipo}>{equipo.nombre_del_equipo}</option>
+                      <option style={{ color: 'black' }} key={equipo.IDEquipo} value={equipo.nombre_del_equipo}>{equipo.nombre_del_equipo}</option>
                     ))}
                   </select>
                 </div>
+              </div>
+              <div className='flex w-full mb-4'>
+                <div className="col-span-2 sm:col-span-1 flex-grow w-full mr-2">
+                  <label htmlFor="category" className="block text-sm font-medium text-white">Especialidad</label>
+                  <select
+                    onChange={(event) => {
+                      setRol(event.target.value);
+                      setErrorMessage('');
+                    }}
+                    id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    <option value="" disabled selected>Selecciona una especialidad</option>
+                    <option value="Programador">Programador</option>
+                    <option value="Diseñador">Diseñador</option>
+                    <option value="Analista">Analista</option>
+                  </select>
+                </div>
 
-                <div className="col-span-2 sm:col-span-1">
+                <div className="col-span-2 sm:col-span-1 flex-grow w-full">
                   <label htmlFor="category" className="block text-sm font-medium text-white">Rol</label>
                   <select
                     onChange={(event) => {
                       setRol(event.target.value);
                       setErrorMessage('');
                     }}
-                    id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5  dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                     <option value="" disabled selected>Selecciona un rol</option>
                     <option value="Miembro">Miembro</option>
                     <option value="Administrador">Administrador</option>
                   </select>
                 </div>
-
               </div>
             </form>
 
@@ -198,12 +208,12 @@ function ModalUser() {
             <button
               type="submit"
               className="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={editar ? actualizarUsuario : agregarUsuario}
+              onClick={agregarUsuario}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
-              <span className="ms-2">{editar ? 'Actualizar Usuario' : 'Agregar Nuevo Usuario'}</span>
+              <span className="ms-2">Agregar Nuevo Usuario</span>
             </button>
           </div>
         </div>

@@ -71,12 +71,25 @@ function TablaProyect() {
                     estado_del_proyecto: estado,
                     descripcion: descripcion,
                 });
-                alert('Proyecto actualizado con éxito');
-                window.location.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Proyecto actualizado con éxito',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.reload();
+                });
             } catch (error) {
+                console.error('Error al actualizar el proyecto:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al actualizar el proyecto',
+                    text: 'Ha ocurrido un error al intentar actualizar el proyecto. Por favor, inténtalo de nuevo más tarde.',
+                });
             }
         }
     };
+    
 
     const editarUsuario = (val) => {
         setEditar(true);
@@ -93,39 +106,60 @@ function TablaProyect() {
     return (
         <>
             {editar ? (
-                <div className="app">
-                    <div className="datos">
-                        <div className='flex'>
-                            <h1 className='text-2xl font-bold mb-6 mr-20'> Formulario de Editar</h1>
-                            <button className="cerrar-btn" onClick={cerrarFormulario}>Cerrar</button>
+                <div className="fixed inset-0 flex items-center justify-center bg-green-800 bg-opacity-70">
+                    <div className="bg-white rounded-lg p-8 ml-20 max-w-md">
+                        <div className="flex items-center mb-6">
+                            <h1 className="text-2xl font-bold mr-20">Formulario de Editar</h1>
+                            <button className="text-black font-extrabold w-10 h-10 hover:bg-red-600 hover:text-white" onClick={cerrarFormulario}>X</button>
                         </div>
-                        <label>Nombre del proyecto:<input
-                            onChange={(event) => {
-                                setProyecto(event.target.value.trim());
-                                setErrorMessage('');
-                            }}
-                            value={proyecto}
-                            type='text' /></label><br />
-                        <label>Estado:<input
-                            onChange={(event) => {
-                                setEstado(event.target.value.trim());
-                                setErrorMessage('');
-                            }}
-                            value={estado}
-                            type='text' /></label><br />
-                        <label>Decripcion:<input
-                            onChange={(event) => {
-                                setDescripcion(event.target.value.trim());
-                                setErrorMessage('');
-                            }}
-                            value={descripcion}
-                            type='text' /></label><br />
-                        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-                        <button className="hover:bg-red-700 hover:text-white" onClick={actualizarProyecto}>Editar</button>
+                        <label className="block mb-4 text-medium font-medium">
+                            Nombre del proyecto:
+                            <input
+                                className="border rounded-lg w-full mt-1 py-2 p-2"
+                                onChange={(event) => {
+                                    setProyecto(event.target.value.trim());
+                                    setErrorMessage('');
+                                }}
+                                value={proyecto}
+                                type='text'
+                            />
+                        </label>
+                        <label className="block mb-4 text-medium font-medium">
+                            Estado:
+                            <select
+                                className="border rounded-lg w-full mt-1 py-2 p-2"
+                                onChange={(event) => {
+                                    setEstado(event.target.value);
+                                    setErrorMessage('');
+                                }}
+                                value={estado}
+                            >
+                                <option value="En curso">En curso</option>
+                                <option value="Completado">Completado</option>
+                                <option value="Pendiente">Pendiente</option>
+                            </select>
+                        </label>
+                        <label className="block mb-4 text-medium font-medium">
+                            Descripción:
+                            <input
+                                className="border rounded-lg w-full mt-1 py-2 p-2"
+                                onChange={(event) => {
+                                    setDescripcion(event.target.value.trim());
+                                    setErrorMessage('');
+                                }}
+                                value={descripcion}
+                                type='text'
+                            />
+                        </label>
+                        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+                        <div className="flex items-center justify-center">
+                            <button className="bg-blue-800 w-40 text-center text-white py-2  rounded-md hover:bg-red-700" onClick={actualizarProyecto}>Actualizar Proyecto</button>
+                        </div>
                     </div>
                 </div>
+
             ) : (
-                <div class="flex justify-center mt-20 lg:ml-60">
+                <div class="flex justify-center mt-10 lg:ml-60">
                     <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5 mx-auto">
                         <h1 class="text-3xl mb-2 text-center font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-5xl"><span class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Tabla Proyectos</span> </h1>
                         <table class="w-full border-collapse bg-white text-left text-xs md:text-sm lg:text-base text-gray-500 ">
