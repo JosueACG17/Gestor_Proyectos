@@ -14,7 +14,7 @@ function Tables() {
   const [usuario, setUsuario] = useState('');
   const [rol, setRol] = useState('');
   const [estado, setEstado] = useState('');
-  const [equipo, setEquipo] = useState('');
+  const [equipo, setEquipo] = useState(''); 
   const [id, setId] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -111,11 +111,11 @@ function Tables() {
           id_usuarios: id,
           correo_electronico: correo,
           contrasenia: contra,
-          especialidad: especialidad, // Aquí es donde estás enviando el valor actual del estado
+          especialidad: especialidad,
           nombre_del_usuario: usuario,
           nombre_del_rol: rol,
           estado: estado,
-          equipo: equipo, // Aquí es donde estás enviando el valor actual del estado
+          IDEquipo: equipo, // Asegúrate de enviar IDEquipo en lugar de equipo
         });
         Swal.fire({
           icon: 'success',
@@ -143,10 +143,10 @@ function Tables() {
     setCorreo(val.correo_electronico);
     setContra(val.contrasenia);
     setUsuario(val.nombre_del_usuario);
-    setEspecialidad(val.especialidad);
     setRol(val.nombre_del_rol);
     setEstado(val.estado);
-    setEquipo(val.equipo);
+    setEquipo(val.IDEquipo || '');
+    setEspecialidad(val.especialidad);
     setMostrarFormulario(true); // Cuando se edita un usuario, se muestra el formulario
 
   };
@@ -237,9 +237,9 @@ function Tables() {
               id="team"
               className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black dark:focus:ring-primary-500 dark:focus:border-primary-500"
             >
-              <option value="">Selecciona un equipo</option>
+              <option value="" disabled selected>Selecciona un equipo</option>
               {EquiposList.map((equipo) => (
-                <option key={equipo.id_equipos} value={equipo.nombre_del_equipo}>{equipo.nombre_del_equipo}</option>
+                <option key={equipo.IDEquipo} value={equipo.id_equipos}>{equipo.nombre_del_equipo}</option>
               ))}
             </select>
             {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
@@ -287,7 +287,7 @@ function Tables() {
                     <td class="px-6 py-4">
                       <div class="flex gap-2">
                         <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                          {val.equipo}
+                          {val.IDEquipo}
                         </span>
                       </div>
                     </td>

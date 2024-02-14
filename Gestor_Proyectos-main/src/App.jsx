@@ -14,6 +14,7 @@ import TabProject from "./pages/TabProject";
 import Tab_Team from './pages/Tab_Team';
 import Carga from "./pages/Carga";
 import ProtectedRoute from './components/utils/ProtectedRoute';
+import TwoFactorAuthForm from './components/nodemailer/TwoFactorAuthForm'
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,7 @@ function App() {
           <Route path='/members' element={<Members />} />
           <Route path='/tasks' element={<Tasks />} />
           <Route path='/teams' element={<Equipos />} />
+          <Route path='/TwoFactorAuthForm' element={<TwoFactorAuthForm />} />
 
           {user && user.nombre_del_rol === 'Miembro' && (
             <>
@@ -56,6 +58,7 @@ function App() {
           {/* Permitir acceso al dashboard para usuarios Miembro y Administrador */}
           {user && user.nombre_del_rol === 'Administrador' && (
             <>
+            
               <Route path='/dashboard/*' element={<Dashboard />} />
               <Route path='/dashboard/table' element={<TableDash />} />
               <Route path='/dashboard/tab_project' element={<TabProject />} />

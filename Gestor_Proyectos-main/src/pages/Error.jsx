@@ -23,7 +23,7 @@ function Error() {
 
             <a
               className="group relative inline-flex items-center mt-5 overflow-hidden rounded bg-green-800 px-10 py-3 ml-3 text-white focus:outline-none focus:ring hover:bg-lime-700"
-              href="/home"
+              href="/"
             >
               <span className="absolute -end-full transition-all group-hover:end-4">
                 <svg

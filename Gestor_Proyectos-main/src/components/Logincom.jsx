@@ -1,7 +1,9 @@
+// Logincom.jsx
 import React, { useEffect, useState } from "react";
 import "../styles/lg.css";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import TwoFactorAuthForm from "../components/nodemailer/TwoFactorAuthForm";
 
 function Logincom() {
     const text = "¡Bienvenido a PriorityPilot!";
@@ -10,6 +12,8 @@ function Logincom() {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+    const [step, setStep] = useState('login'); // Estado para controlar el paso del proceso de autenticación
+    const [verificationCode, setVerificationCode] = useState('');
 
     const ojovisible = (e) => {
         e.preventDefault();
@@ -17,19 +21,6 @@ function Logincom() {
     }
 
     const navigate = useNavigate();
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const user = localStorage.getItem('user');
-
-        if (token && user) {
-            const parsedUser = JSON.parse(user);
-            if (parsedUser.nombre_del_rol === 'Administrador') {
-                navigate('/dashboard');
-            } else {
-                navigate('/home');
-            }
-        }
-    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -56,26 +47,42 @@ function Logincom() {
                 const data = await response.json();
                 if (response.ok) {
                     if (data.Estatus === "CORRECTO" && data.Usuario && data.Usuario.token && data.Usuario.user) {
-                        const { token, user } = data.Usuario;
-                        localStorage.setItem('token', token);
+                        const { user } = data.Usuario;
                         localStorage.setItem('user', JSON.stringify({ ...user, role: user.role }));
-                
-                        if (user.nombre_del_rol === 'Administrador') {
-                            navigate('/dashboard');
-                        } else {
-                            navigate('/home');
-                        }
+
+                        // Mostrar el formulario de autenticación de dos factores
+                        setStep('twoFactorAuth');
                     } else {
                         setError("Correo o contraseña incorrecto");
                     }
                 } else {
                     setError("Error al realizar la solicitud: " + data.message);
-                }                
+                }
             } catch (error) {
                 setError("Error de conexión");
             }
         }
     };
+
+    const handleSubmitTwoFactorAuth = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch('http://localhost:3000/verificarCodigo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ correo_electronico: email, contrasenia: password, codigo: verificationCode }),
+            });
+
+            // Manejar la respuesta del servidor aquí
+        } catch (error) {
+            console.error("Error de conexión", error);
+            setError("Error de conexión");
+        }
+    };
+
     useEffect(() => {
         let currentIndex = 0;
         const interval = setInterval(() => {
@@ -87,6 +94,7 @@ function Logincom() {
             }
         }, 50);
     }, []);
+
 
     return (
         <>
@@ -173,10 +181,24 @@ function Logincom() {
                                 <div>
                                     <button type="submit"
                                         className="w-full flex justify-center bg-gradient-to-b from-green-600 to-lime-700  hover:bg-gradient-to-l hover:from-blue-500 hover:to-indigo-600 text-gray-100 p-4  rounded-full tracking-wide font-semibold  shadow-lg cursor-pointer transition ease-in duration-700">
-                                        Iniciar Sesión
+                                        Verificar
                                     </button>
                                 </div>
                             </form>
+
+                            {/* Renderizar el formulario de autenticación de dos factores */}
+                            {step === 'twoFactorAuth' && (
+                                <TwoFactorAuthForm
+                                    email={email}
+                                    password={password}
+                                    verificationCode={verificationCode}
+                                    setEmail={setEmail}
+                                    setPassword={setPassword}
+                                    setVerificationCode={setVerificationCode}
+                                    handleSubmit={handleSubmitTwoFactorAuth}
+                                />
+                            )}
+
                         </div>
                     </div>
                 </div>

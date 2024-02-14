@@ -50,42 +50,7 @@ const verifyRole = (requiredRole) => (req, res, next) => {
   });
 };
 
-// Rutas
-app.post('/acceso', (req, res) => {
-  const { correo_electronico, contrasenia } = req.body;
-  const sql = 'SELECT *, nombre_del_rol FROM usuarios WHERE correo_electronico = ?';
-  db.query(sql, [correo_electronico], (error, results) => {
-    if (error) {
-      console.error('Error en la consulta:', error);
-      return res.status(500).json({ mensaje: 'Error interno del servidor' });
-    }
 
-    if (results.length > 0) {
-      const user = results[0];
-      const hashedPassword = user.contrasenia; // Extraemos la contraseña encriptada de la base de datos
-      bcrypt.compare(contrasenia, hashedPassword, (err, result) => {
-        if (err) {
-          console.error('Error al comparar contraseñas:', err);
-          return res.status(500).json({ mensaje: 'Error interno del servidor' });
-        }
-        if (result) {
-          const tokenPayload = {
-            id_usuario: user.id_usuarios,
-            id_rol: user.nombre_del_rol // Asegúrate de que este campo contenga el rol del usuario
-          };
-          const token = jwt.sign(tokenPayload, '123', { expiresIn: '1d' });
-          // Envía el token JWT y los datos del usuario al front-end
-          res.cookie('token', token);
-          return res.json({ Estatus: 'CORRECTO', Usuario: { token, user } });
-        } else {
-          return res.json({ Estatus: 'ERROR', Error: 'Usuario o Contraseña Incorrecta' });
-        }
-      });
-    } else {
-      return res.json({ Estatus: 'ERROR', Error: 'Usuario o Contraseña Incorrecta' });
-    }
-  });
-});
 
 
 app.get('/usuario', verifyRole("Miembro"), (req, res) => {
@@ -254,24 +219,24 @@ app.delete("/eliminarProyecto/:id", (req, res) => {
 //EDITAR
 
 app.put("/editarusuario", async (req, res) => {
-  const id = req.body.id_usuarios;
-  const correo = req.body.correo_electronico;
-  const contra = req.body.contrasenia;
-  const usuario = req.body.nombre_del_usuario;
-  const rol = req.body.nombre_del_rol;
-  const especialidad = req.body.especialidad;
-  const equipo = req.body.IDEquipo;
+  const { id_usuarios, correo_electronico, contrasenia, nombre_del_usuario, nombre_del_rol, especialidad, IDEquipo } = req.body;
 
   try {
     // Hashea la contraseña antes de actualizar
-    const hashedPassword = await bcrypt.hash(contra, 10);
+    const hashedPassword = await bcrypt.hash(contrasenia, 10);
+
+    const updateQuery = `
+      UPDATE usuarios
+      SET correo_electronico=?, contrasenia=?, nombre_del_usuario=?, nombre_del_rol=?, especialidad=?, IDEquipo=?
+      WHERE id_usuarios=?
+    `;
 
     db.query(
-      'UPDATE usuarios SET correo_electronico=?, contrasenia=?, nombre_del_usuario=?, nombre_del_rol=?, especialidad = ?, IDEquipo=? WHERE id_usuarios=?',
-      [correo, hashedPassword, usuario, rol, equipo, id,especialidad],
+      updateQuery,
+      [correo_electronico, hashedPassword, nombre_del_usuario, nombre_del_rol, especialidad, IDEquipo, id_usuarios],
       (err, results) => {
         if (err) {
-          console.log(err);
+          console.error(err);
           res.status(500).send("Error al actualizar usuario");
         } else {
           res.send("Usuario actualizado con éxito");
@@ -279,7 +244,7 @@ app.put("/editarusuario", async (req, res) => {
       }
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send("Error al actualizar usuario");
   }
 });
@@ -319,6 +284,109 @@ app.put("/editarequipo", (req, res) => {
       }
     }
   );
+});
+
+//CÓDIGO
+app.post('/guardarCodigo', (req, res) => {
+  const { correo_electronico, codigo } = req.body;
+  const sql = 'UPDATE usuarios SET codigo_autenticacion = ? WHERE correo_electronico = ?';
+  db.query(sql, [codigo, correo_electronico], (error, results) => {
+    if (error) {
+      console.error('Error al guardar el código de autenticación:', error);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+    res.json({ mensaje: 'Código de autenticación guardado correctamente' });
+  });
+});
+
+// Después de la definición del endpoint '/guardarCodigo'
+
+// Endpoint para eliminar el código de autenticación
+app.post('/eliminarCodigo', (req, res) => {
+  const { correo_electronico } = req.body;
+  const sql = 'UPDATE usuarios SET codigo_autenticacion = NULL WHERE correo_electronico = ?';
+  db.query(sql, [correo_electronico], (error, results) => {
+    if (error) {
+      console.error('Error al eliminar el código de autenticación:', error);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+    res.json({ mensaje: 'Código de autenticación eliminado correctamente' });
+  });
+});
+
+
+
+// Verificar código de autenticación
+app.post('/verificarCodigo', (req, res) => {
+  const { correo_electronico, codigo } = req.body;
+  const sql = 'SELECT * FROM usuarios WHERE correo_electronico = ? AND codigo_autenticacion = ?';
+  db.query(sql, [correo_electronico, codigo], (error, results) => {
+    if (error) {
+      console.error('Error al verificar el código de autenticación:', error);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+    if (results.length > 0) {
+      // Si el código es válido, puedes realizar acciones adicionales aquí si es necesario
+      res.json({ mensaje: 'Código de autenticación válido' });
+    } else {
+      res.status(401).json({ mensaje: 'Código de autenticación inválido' });
+    }
+  });
+});
+
+
+// Ruta /acceso en el backend
+app.post('/acceso', async (req, res) => {
+  const { correo_electronico, contrasenia } = req.body;
+  const sql = 'SELECT *, nombre_del_rol FROM usuarios WHERE correo_electronico = ?';
+  db.query(sql, [correo_electronico], async (error, results) => {
+    if (error) {
+      console.error('Error en la consulta:', error);
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+
+    if (results.length > 0) {
+      const user = results[0];
+
+      const tokenPayload = {
+        id_usuario: user.id_usuarios,
+        nombre_del_rol: user.nombre_del_rol // Asegúrate de que este campo contenga el rol del usuario
+      };
+
+      const token = jwt.sign(tokenPayload, '123', { expiresIn: '1d' });
+
+      // Generar código de autenticación aleatorio
+      const verificationCode = Math.floor(100000 + Math.random() * 900000); // Genera un código de 6 dígitos
+
+      // Actualizar el código de autenticación en la base de datos
+      const updateCodeResponse = await fetch('http://localhost:3000/guardarCodigo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ correo_electronico, codigo: verificationCode }),
+      });
+
+      if (!updateCodeResponse.ok) {
+        return res.status(500).json({ mensaje: 'Error al actualizar el código de autenticación en la base de datos' });
+      }
+
+      // Enviar el código de autenticación por correo electrónico, pasando la dirección de correo electrónico del usuario
+      const emailResponse = await fetch('http://localhost:3000/enviarCorreo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ correo_electronico, codigo: verificationCode }),
+      });
+
+      // Envía el token JWT y los datos del usuario al front-end
+      res.cookie('token', token);
+      return res.json({ Estatus: 'CORRECTO', Usuario: { token, user } });
+    } else {
+      return res.json({ Estatus: 'ERROR', Error: 'Usuario o Contraseña Incorrecta' });
+    }
+  });
 });
 
 app.listen(port, () => {

@@ -94,17 +94,21 @@ export default function Proyects() {
                                 <p>Este sera el nombre que todos podran visualizar de tu proyecto</p>
                             </label>
 
-                            <label>
+                            <select
                                 Estado del Proyecto
-                                <input
+                                
                                     onChange={(event) => {
                                         setEstado(event.target.value.trim());
                                         clearErrorMessage();
                                     }}
                                     type="text"
                                     placeholder="Taquitos S.A."
-                                />
-                            </label>
+                                    >
+                                    <option value="" selected disabled>Selecciona una especialidad</option>
+                                    <option value="En curso">En curso</option>
+                                    <option value="Completado">Completado</option>
+                                    <option value="Pendiente">Pendiente</option>
+                                  </select>
 
                             <label>
                                 Descripción del proyecto

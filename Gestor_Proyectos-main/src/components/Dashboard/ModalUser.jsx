@@ -164,9 +164,9 @@ function ModalUser() {
                       setErrorMessage('');
                     }}
                     id="team" className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 text-black ">
-                    <option style={{ color: 'black' }} value="">Selecciona un equipo</option>
+                    <option style={{ color: 'black' }} value="" disabled selected>Selecciona un equipo</option>
                     {equiposList.map((equipo) => (
-                      <option style={{ color: 'black' }} key={equipo.IDEquipo} value={equipo.nombre_del_equipo}>{equipo.nombre_del_equipo}</option>
+                      <option style={{ color: 'black' }} key={equipo.IDEquipo} value={equipo.id_equipos}>{equipo.nombre_del_equipo}</option>
                     ))}
                   </select>
                 </div>
@@ -176,7 +176,7 @@ function ModalUser() {
                   <label htmlFor="category" className="block text-sm font-medium text-white">Especialidad</label>
                   <select
                     onChange={(event) => {
-                      setRol(event.target.value);
+                      setEspecialidad(event.target.value);
                       setErrorMessage('');
                     }}
                     id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:focus:ring-primary-500 dark:focus:border-primary-500">
